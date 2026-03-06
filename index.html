@@ -93,7 +93,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
 .bv-bars { display: flex; align-items: flex-end; justify-content: center; gap: 1.5rem; height: 160px; padding: 1.2rem 1rem 0; }
 .bv-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; flex: 1; }
 .bv-bar-col { width: 100%; border-radius: 8px 8px 0 0; min-height: 4px; }
-.bv-bar-val { font-family: 'Lora', serif; font-size: 0.82rem; font-weight: 700; }
+.bv-bar-val { font-family: 'Lora', serif; font-size: 0.68rem; font-weight: 700; }
 .bv-bar-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; text-align: center; }
 .bv-baseline { height: 2px; background: var(--border); border-radius: 1px; }
 .bv-delta { background: var(--gold-light); border-radius: 12px; padding: 1rem 1.2rem; border: 1.5px solid var(--border); }
@@ -697,14 +697,14 @@ function renderBudgetChart() {
   const bh=v=>Math.max(4,Math.round((v/mx)*BH));
   const dc=delta===null?'':delta>=0?'ok':delta>-ob*0.3?'warn':'danger';
   const dv=delta!==null?(delta>=0?'+':'')+' €'+delta.toFixed(2):(sa>=0?'+':'')+' €'+sa.toFixed(2);
-  const obBar=ob>0?'<div class="bv-bar-wrap"><div class="bv-bar-val">€'+ob.toFixed(0)+'</div><div class="bv-bar-col" style="height:'+bh(ob)+'px;background:#c8a878;opacity:0.7;border:2px dashed #a8885a"></div><div class="bv-bar-label">Obiettivo</div></div>':'';
+  const obBar=ob>0?'<div class="bv-bar-wrap"><div class="bv-bar-val">€'+ob.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(ob)+'px;background:#c8a878;opacity:0.7;border:2px dashed #a8885a"></div><div class="bv-bar-label">Obiettivo</div></div>':'';
   const obRow=ob>0?'<div class="bv-delta-row"><span class="bv-delta-label">🎯 Obiettivo risparmio</span><span class="bv-delta-val" style="color:#a8885a">€'+ob.toFixed(2)+'</span></div>':'';
   el.innerHTML='<div class="budget-visual">'+
     '<div class="bv-bars">'+
-    '<div class="bv-bar-wrap"><div class="bv-bar-val">€'+ti.toFixed(0)+'</div><div class="bv-bar-col" style="height:'+bh(ti)+'px;background:#a8c890"></div><div class="bv-bar-label">Entrate</div></div>'+
-    '<div class="bv-bar-wrap"><div class="bv-bar-val">€'+te.toFixed(0)+'</div><div class="bv-bar-col" style="height:'+bh(te)+'px;background:#d4a090"></div><div class="bv-bar-label">Spese</div></div>'+
+    '<div class="bv-bar-wrap"><div class="bv-bar-val">€'+ti.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(ti)+'px;background:#a8c890"></div><div class="bv-bar-label">Entrate</div></div>'+
+    '<div class="bv-bar-wrap"><div class="bv-bar-val">€'+te.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(te)+'px;background:#d4a090"></div><div class="bv-bar-label">Spese</div></div>'+
     obBar+
-    '<div class="bv-bar-wrap"><div class="bv-bar-val" style="color:'+(sa>=0?'#5a8040':'#b04030')+'">'+(sa>=0?'+':'')+' €'+sa.toFixed(0)+'</div><div class="bv-bar-col" style="height:'+bh(Math.abs(sa))+'px;background:'+(sa>=0?'#7aaa58':'#c87060')+'"></div><div class="bv-bar-label">Saldo</div></div>'+
+    '<div class="bv-bar-wrap"><div class="bv-bar-val" style="color:'+(sa>=0?'#5a8040':'#b04030')+'">'+(sa>=0?'+':'')+' €'+sa.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(Math.abs(sa))+'px;background:'+(sa>=0?'#7aaa58':'#c87060')+'"></div><div class="bv-bar-label">Saldo</div></div>'+
     '</div><div class="bv-baseline"></div>'+
     '<div class="bv-delta">'+
     '<div class="bv-delta-row"><span class="bv-delta-label">💰 Entrate</span><span class="bv-delta-val" style="color:#5a8040">+€'+ti.toFixed(2)+'</span></div>'+
