@@ -685,7 +685,7 @@ function renderRicariche() {
   el.innerHTML='<div style="background:var(--gold-light);border-radius:10px;padding:0.7rem 1rem;margin-bottom:1rem;border:1px solid var(--border)">'+
     '<div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem">Totale ricaricato</div>'+
     totHtml+'</div>'+
-    ric.map(r=>'<div class="tx-item"><div class="tx-icon" style="background:var(--accent-light)">'+r.carta.split(' ')[0]+'</div>'+
+    ric.map(r=>'<div class="tx-item">'+
       '<div class="tx-info"><div class="tx-name">'+r.carta+'</div>'+
       '<div class="tx-cat">'+new Date(r.date).toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+(r.note?' · '+r.note:'')+'</div></div>'+
       '<div class="tx-right"><div class="tx-amount pos">+€'+r.amount.toFixed(2)+'</div>'+
