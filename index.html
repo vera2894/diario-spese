@@ -263,7 +263,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
     </div>
     <div class="form-group"><label>Metodo di pagamento</label>
       <select id="s-payment">
-        <option>💜 Revolut</option><option>💳 Carta di credito</option><option>🏧 Bancomat</option><option>🟡 Satispay</option><option>💵 Contanti</option>
+        <option>Revolut</option><option>Carta di credito</option><option>Bancomat</option><option>Satispay</option><option>PayPal</option><option>Contanti</option>
       </select>
     </div>
     <div class="form-group"><label>Data <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(facoltativa)</span></label><input type="date" id="s-date"></div>
@@ -315,7 +315,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
     <h3>🔋 Nuova Ricarica</h3>
     <div class="form-group"><label>Carta</label>
       <select id="r-carta">
-        <option>💜 Revolut</option><option>🟡 Satispay</option><option>💳 Carta di credito</option><option>🏧 Bancomat</option><option>💵 Contanti</option>
+        <option>Revolut</option><option>Satispay</option><option>Carta di credito</option><option>Bancomat</option><option>PayPal</option><option>Contanti</option>
       </select>
     </div>
     <div class="form-group"><label>Importo (€)</label><input type="number" id="r-amount" placeholder="50.00" step="0.01" inputmode="decimal"></div>
@@ -351,7 +351,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
     </div>
     <div class="form-group"><label>Metodo di pagamento</label>
       <select id="edit-s-payment">
-        <option>💜 Revolut</option><option>💳 Carta di credito</option><option>🏧 Bancomat</option><option>🟡 Satispay</option><option>💵 Contanti</option>
+        <option>Revolut</option><option>Carta di credito</option><option>Bancomat</option><option>Satispay</option><option>PayPal</option><option>Contanti</option>
       </select>
     </div>
     <div class="modal-btns">
@@ -550,7 +550,7 @@ function editSpesa(id) {
   document.getElementById('edit-s-desc').value=s.desc||'';
   document.getElementById('edit-s-amount').value=s.amount;
   document.getElementById('edit-s-cat').value=s.cat;
-  document.getElementById('edit-s-payment').value=s.payment||'💜 Revolut';
+  document.getElementById('edit-s-payment').value=s.payment||'Revolut';
   openModal('edit-spesa');
 }
 function updateSpesa() {
