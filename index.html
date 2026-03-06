@@ -21,8 +21,8 @@
 body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; min-height: 100vh; overscroll-behavior: none; }
 .app { max-width: 430px; margin: 0 auto; min-height: 100vh; background: var(--bg); }
 
-.header { background: #d8c4a8; padding: calc(var(--safe-top) + 1rem) 1.4rem 1.4rem; position: sticky; top: 0; z-index: 10; }
-.header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.header { background: #d8c4a8; padding: calc(var(--safe-top) + 1rem) 1.4rem 0; position: sticky; top: 0; z-index: 10; }
+.header-row { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 0.8rem; }
 .header-title { font-family: 'Lora', serif; font-size: 0.75rem; color: rgba(255,245,230,0.75); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem; }
 .header-month { display: flex; align-items: center; gap: 0.5rem; color: #fff8f0; font-family: 'Lora', serif; font-size: 1.1rem; font-weight: 600; }
 .month-btn { background: none; border: none; color: #fff8f0; font-size: 1.4rem; cursor: pointer; padding: 0 0.2rem; }
@@ -30,7 +30,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
 .balance-label { font-size: 0.65rem; color: rgba(255,245,230,0.7); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.2rem; }
 .balance-val { font-family: 'Lora', serif; font-size: 1.6rem; font-weight: 700; color: #fff8f0; }
 
-.summary-strip { display: flex; justify-content: center; gap: 4rem; background: #c4a882; padding: 0.8rem 1rem; }
+.summary-strip { display: flex; justify-content: center; gap: 4rem; background: #c4a882; padding: 0.8rem 0; margin: 0 -1.4rem; }
 .strip-item { text-align: center; }
 .strip-label { font-size: 0.65rem; color: rgba(255,245,230,0.75); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.15rem; }
 .strip-val { font-family: 'Lora', serif; font-size: 1.05rem; font-weight: 700; }
@@ -120,8 +120,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
           <span id="month-label">Marzo 2026</span>
           <button class="month-btn" onclick="changeMonth(1)">›</button>
         </div>
-        <button onclick="openStorico()" style="background:none;border:none;color:rgba(255,245,230,0.75);font-size:0.7rem;font-family:'Nunito',sans-serif;cursor:pointer;padding:0.15rem 0;letter-spacing:0.05em;display:flex;align-items:center;gap:0.3rem;margin-top:0.2rem;">
-          📅 <span>Storico</span>
+        <button onclick="openStorico()" style="background:none;border:none;color:rgba(255,245,230,0.75);font-size:0.7rem;font-family:'Nunito',sans-serif;cursor:pointer;padding:0.1rem 0;letter-spacing:0.05em;display:flex;align-items:center;gap:0.3rem;margin-top:0.1rem;">
+          <span>Storico</span>
         </button>
       </div>
       <div class="header-balance">
@@ -129,16 +129,15 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
         <div class="balance-val" id="hdr-balance">—</div>
       </div>
     </div>
-  </div>
-
-  <div class="summary-strip">
-    <div class="strip-item">
-      <div class="strip-label">Entrate</div>
-      <div class="strip-val income" id="strip-income">€0</div>
-    </div>
-    <div class="strip-item">
-      <div class="strip-label">Spese</div>
-      <div class="strip-val expense" id="strip-expenses">€0</div>
+    <div class="summary-strip">
+      <div class="strip-item">
+        <div class="strip-label">Entrate</div>
+        <div class="strip-val income" id="strip-income">€0</div>
+      </div>
+      <div class="strip-item">
+        <div class="strip-label">Spese</div>
+        <div class="strip-val expense" id="strip-expenses">€0</div>
+      </div>
     </div>
   </div>
 
@@ -225,8 +224,26 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
 
   <div class="modal" id="modal-storico" style="display:none">
     <div class="modal-handle"></div>
-    <h3>📅 Storico mensile</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+      <h3 style="margin:0">📅 Storico mensile</h3>
+      <button onclick="openModal('impostazioni')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;padding:0.2rem">⚙️</button>
+    </div>
     <div id="storico-list"><div class="empty"><div class="ei">📅</div><p>Nessun dato storico disponibile</p></div></div>
+  </div>
+
+  <div class="modal" id="modal-impostazioni" style="display:none">
+    <div class="modal-handle"></div>
+    <h3>⚙️ Impostazioni</h3>
+    <div style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1.2rem">
+      <button onclick="esportaDati()" style="width:100%;padding:1rem;background:var(--accent-light);border:1.5px solid var(--border);border-radius:12px;font-size:0.95rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left">
+        📤 Esporta dati<br><span style="font-size:0.78rem;font-weight:400;color:var(--muted)">Scarica un file JSON con tutti i tuoi dati</span>
+      </button>
+      <label style="width:100%;padding:1rem;background:var(--accent-light);border:1.5px solid var(--border);border-radius:12px;font-size:0.95rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);display:block;box-sizing:border-box">
+        📥 Importa dati<br><span style="font-size:0.78rem;font-weight:400;color:var(--muted)">Ripristina da un file JSON salvato</span>
+        <input type="file" accept=".json" onchange="importaDati(event)" style="display:none">
+      </label>
+    </div>
+    <button class="btn-cancel" onclick="closeModal()" style="width:100%">Chiudi</button>
   </div>
 
   <div class="modal" id="modal-spesa" style="display:none">
@@ -409,6 +426,36 @@ function changeMonth(d) {
   saveState();
   document.getElementById('month-label').textContent = MONTHS[state.month]+' '+state.year;
   updateDashboard(); renderBudgetChart(); renderSpese(); renderEntrate(); renderTransazioni();
+}
+
+function esportaDati() {
+  const json = JSON.stringify(state, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'diario-spese-backup-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importaDati(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.spese || !imported.entrate) { alert('File non valido!'); return; }
+      state = imported;
+      saveState();
+      updateDashboard(); renderBudgetChart(); renderSpese(); renderEntrate(); renderTransazioni();
+      closeModal();
+      alert('Dati importati correttamente! ✅');
+    } catch(err) {
+      alert('Errore nel file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
 }
 
 function openStorico() {
