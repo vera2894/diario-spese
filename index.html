@@ -450,7 +450,12 @@ function importaDati(event) {
     try {
       const imported = JSON.parse(e.target.result);
       if (!imported.spese || !imported.entrate) { alert('File non valido!'); return; }
-      state = imported;
+      state.spese = imported.spese;
+      state.entrate = imported.entrate;
+      state.budgets = imported.budgets || {};
+      state.ricariche = imported.ricariche || [];
+      state.month = imported.month;
+      state.year = imported.year;
       saveState();
       updateDashboard(); renderBudgetChart(); renderSpese(); renderEntrate(); renderTransazioni();
       closeModal();
