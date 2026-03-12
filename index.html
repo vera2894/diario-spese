@@ -115,7 +115,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
   <div class="header">
     <div class="header-row">
       <div style="display:flex;flex-direction:column;align-items:center;width:100%;gap:0.5rem">
-        <div class="header-title" style="text-align:center">Diario Spese: Veronica 🌸</div>
+        <div class="header-title" style="text-align:center" id="app-title">Diario Spese: Veronica 🌸</div>
         <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
           <div>
             <div class="header-month">
@@ -238,17 +238,77 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
 
   <div class="modal" id="modal-impostazioni" style="display:none">
     <div class="modal-handle"></div>
-    <h3>⚙️ Impostazioni</h3>
-    <div style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1.2rem">
-      <button onclick="esportaDati()" style="width:100%;padding:1rem;background:var(--accent-light);border:1.5px solid var(--border);border-radius:12px;font-size:0.95rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left">
-        📤 Esporta dati<br><span style="font-size:0.78rem;font-weight:400;color:var(--muted)">Scarica un file JSON con tutti i tuoi dati</span>
-      </button>
-      <label style="width:100%;padding:1rem;background:var(--accent-light);border:1.5px solid var(--border);border-radius:12px;font-size:0.95rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);display:block;box-sizing:border-box">
-        📥 Importa dati<br><span style="font-size:0.78rem;font-weight:400;color:var(--muted)">Ripristina da un file JSON salvato</span>
-        <input type="file" accept=".json" onchange="importaDati(event)" style="display:none">
-      </label>
+
+    <!-- Vista: menu principale -->
+    <div id="imp-menu">
+      <h3>⚙️ Impostazioni</h3>
+      <div style="display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1.2rem">
+        <button onclick="showImpSection('personalizzazioni')" style="width:100%;padding:1rem 1.1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;font-size:0.92rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left;display:flex;align-items:center;justify-content:space-between">
+          <span>🎨 Personalizzazioni<br><span style="font-size:0.75rem;font-weight:400;color:var(--muted)">Gestisci categorie e metodi di pagamento</span></span>
+          <span style="color:var(--muted);font-size:1.1rem">›</span>
+        </button>
+        <button onclick="showImpSection('nome')" style="width:100%;padding:1rem 1.1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;font-size:0.92rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left;display:flex;align-items:center;justify-content:space-between">
+          <span>✏️ Nome app<br><span style="font-size:0.75rem;font-weight:400;color:var(--muted)">Personalizza il tuo nome nell'intestazione</span></span>
+          <span style="color:var(--muted);font-size:1.1rem">›</span>
+        </button>
+        <button onclick="showImpSection('backup')" style="width:100%;padding:1rem 1.1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;font-size:0.92rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left;display:flex;align-items:center;justify-content:space-between">
+          <span>💾 Backup dati<br><span style="font-size:0.75rem;font-weight:400;color:var(--muted)">Esporta o importa i tuoi dati</span></span>
+          <span style="color:var(--muted);font-size:1.1rem">›</span>
+        </button>
+      </div>
+      <button class="btn-cancel" onclick="closeModal()" style="width:100%">Chiudi</button>
     </div>
-    <button class="btn-cancel" onclick="closeModal()" style="width:100%">Chiudi</button>
+
+    <!-- Vista: Personalizzazioni -->
+    <div id="imp-personalizzazioni" style="display:none">
+      <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1rem">
+        <button onclick="showImpSection('menu')" style="background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;padding:0">‹</button>
+        <h3 style="margin:0">🎨 Personalizzazioni</h3>
+      </div>
+      <div style="background:linear-gradient(160deg,#d8c4a8,#c4a882);border-radius:14px;padding:0.8rem 0.8rem 0;margin-bottom:1rem">
+        <div style="display:flex">
+          <button class="stab-btn" data-tab="spese" onclick="renderSettingsTab('spese')" style="flex:1;background:#f5f0e8;border:none;border-radius:10px 10px 0 0;padding:0.5rem 0;font-family:'Nunito',sans-serif;font-size:0.78rem;color:#c4a882;font-weight:700;cursor:pointer">Spese</button>
+          <button class="stab-btn" data-tab="entrate" onclick="renderSettingsTab('entrate')" style="flex:1;background:transparent;border:none;border-radius:10px 10px 0 0;padding:0.5rem 0;font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(255,248,240,0.8);font-weight:500;cursor:pointer">Entrate</button>
+          <button class="stab-btn" data-tab="pagamenti" onclick="renderSettingsTab('pagamenti')" style="flex:1;background:transparent;border:none;border-radius:10px 10px 0 0;padding:0.5rem 0;font-family:'Nunito',sans-serif;font-size:0.78rem;color:rgba(255,248,240,0.8);font-weight:500;cursor:pointer">Pagamenti</button>
+        </div>
+      </div>
+      <div id="settings-content" style="margin-bottom:1rem"></div>
+    </div>
+
+    <!-- Vista: Backup -->
+    <div id="imp-backup" style="display:none">
+      <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1rem">
+        <button onclick="showImpSection('menu')" style="background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;padding:0">‹</button>
+        <h3 style="margin:0">💾 Backup dati</h3>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.2rem">
+        <button onclick="esportaDati()" style="width:100%;padding:1rem 1.1rem;background:var(--accent-light);border:1.5px solid var(--border);border-radius:14px;font-size:0.92rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left">
+          📤 Esporta dati<br><span style="font-size:0.75rem;font-weight:400;color:var(--muted)">Scarica un file JSON con tutti i tuoi dati</span>
+        </button>
+        <label style="width:100%;padding:1rem 1.1rem;background:var(--accent-light);border:1.5px solid var(--border);border-radius:14px;font-size:0.92rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);display:block;box-sizing:border-box">
+          📥 Importa dati<br><span style="font-size:0.75rem;font-weight:400;color:var(--muted)">Ripristina da un file JSON salvato</span>
+          <input type="file" accept=".json" onchange="importaDati(event)" style="display:none">
+        </label>
+      </div>
+      <button class="btn-cancel" onclick="showImpSection('menu')" style="width:100%">Indietro</button>
+    </div>
+
+    <!-- Vista: Nome -->
+    <div id="imp-nome" style="display:none">
+      <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1.2rem">
+        <button onclick="showImpSection('menu')" style="background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;padding:0">‹</button>
+        <h3 style="margin:0">✏️ Nome app</h3>
+      </div>
+      <div style="margin-bottom:1.2rem">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.4rem;font-family:'Nunito',sans-serif">Il titolo apparirà come: <strong>Diario Spese: [Nome] 🌸</strong></div>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <span style="font-size:0.88rem;color:var(--muted);white-space:nowrap;font-family:'Nunito',sans-serif">Diario Spese:</span>
+          <input id="input-nome-utente" type="text" placeholder="Il tuo nome" style="flex:1;border:1.5px solid var(--border);border-radius:10px;padding:0.5rem 0.8rem;font-family:'Nunito',sans-serif;font-size:0.9rem;background:var(--bg);color:var(--text);outline:none">
+        </div>
+      </div>
+      <button onclick="salvaNome()" style="width:100%;padding:0.9rem;background:var(--accent);border:none;border-radius:12px;color:white;font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;margin-bottom:0.6rem">Salva nome</button>
+      <button class="btn-cancel" onclick="showImpSection('menu')" style="width:100%">Indietro</button>
+    </div>
   </div>
 
   <div class="modal" id="modal-spesa" style="display:none">
@@ -392,10 +452,73 @@ const KEY = 'miafinanza_data';
 function loadState() {
   try { const r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch(e) {}
   const n = new Date();
-  return { spese:[], entrate:[], budgets:{}, ricariche:[], month:n.getMonth(), year:n.getFullYear() };
+  return { spese:[], entrate:[], budgets:{}, ricariche:[], month:n.getMonth(), year:n.getFullYear(), nomeUtente:"Veronica", catSpese:["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"], catEntrate:["💼 Stipendio","🎁 Regalo","📦 Altro"], metodiPagamento:["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"] };
 }
 function saveState() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
 const state = loadState();
+
+
+// Ensure legacy state has new fields
+if (!state.nomeUtente) state.nomeUtente = "Veronica";
+if (!state.catSpese) state.catSpese = ["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"];
+if (!state.catEntrate) state.catEntrate = ["💼 Stipendio","🎁 Regalo","📦 Altro"];
+if (!state.metodiPagamento) state.metodiPagamento = ["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"];
+
+function populateSelect(id, items, selectedVal) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cur = selectedVal || el.value;
+  el.innerHTML = items.map(i => '<option'+(i===cur?' selected':'')+'>'+i+'</option>').join('');
+}
+function refreshAllSelects() {
+  populateSelect('s-cat', state.catSpese);
+  populateSelect('edit-s-cat', state.catSpese);
+  populateSelect('s-payment', state.metodiPagamento);
+  populateSelect('edit-s-payment', state.metodiPagamento);
+  populateSelect('r-carta', state.metodiPagamento);
+  populateSelect('e-cat', state.catEntrate);
+  populateSelect('edit-e-cat', state.catEntrate);
+}
+function renderSettingsTab(tab) {
+  document.querySelectorAll('.stab-btn').forEach(function(b) {
+    b.style.background = b.dataset.tab===tab ? '#f5f0e8' : 'transparent';
+    b.style.color = b.dataset.tab===tab ? '#c4a882' : 'rgba(255,248,240,0.8)';
+    b.style.fontWeight = b.dataset.tab===tab ? '700' : '500';
+  });
+  var cont = document.getElementById('settings-content');
+  var EMOJIS = ["🧺","🍕","✨","🚗","👗","💊","🎭","🏠","🏨","⚽","📦","💼","💸","🎁","📈","🛍️","☕","🎓","💻","🐾","✈️","🎵","🍷","🏋️","💅","🌿","🛒","📱","🎮","🏥","🚿","⚡","🎨","📚","🍔","🧴","🐶","🌺","💈","🚲"];
+  var items, addFn, deleteFn, title, withEmoji;
+  if (tab==='spese') { items=state.catSpese; addFn='addCatSpesa'; deleteFn='delCatSpesa'; title='Categorie di Spesa'; withEmoji=true; }
+  else if (tab==='entrate') { items=state.catEntrate; addFn='addCatEntrata'; deleteFn='delCatEntrata'; title='Categorie di Entrata'; withEmoji=true; }
+  else { items=state.metodiPagamento; addFn='addMetodo'; deleteFn='delMetodo'; title='Metodi di Pagamento'; withEmoji=false; }
+  var listHtml = items.map(function(item,i) {
+    return '<div style="display:flex;align-items:center;background:var(--surface);border-radius:12px;padding:0.6rem 0.9rem;border:1px solid var(--border);gap:0.7rem">'+(withEmoji?'<span style="font-size:1.1rem;min-width:24px">'+item.split(" ")[0]+'</span>':'')+'<span style="flex:1;font-size:0.87rem;color:var(--text)">'+(withEmoji?item.split(" ").slice(1).join(" "):item)+'</span><button onclick="'+deleteFn+'('+i+')" style="background:none;border:none;color:var(--red);font-size:0.8rem;cursor:pointer;font-family:Nunito,sans-serif">elimina</button></div>';
+  }).join('');
+  var emojiPickerHtml = withEmoji ? '<button onclick="toggleEmojiPicker()" id="emoji-btn" style="font-size:1.3rem;background:var(--accent-light);border:1px solid var(--border);border-radius:10px;padding:0.35rem 0.6rem;cursor:pointer;min-width:48px">📦</button>' : '';
+  var emojiGridHtml = withEmoji ? '<div id="emoji-picker" style="display:none;flex-wrap:wrap;gap:0.3rem;max-height:90px;overflow-y:auto;width:100%">'+EMOJIS.map(function(e){return '<button onclick="selectEmoji(\''+e+'\')" style="font-size:1.2rem;background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.25rem 0.35rem;cursor:pointer">'+e+'</button>';}).join('')+'</div>' : '';
+  cont.innerHTML = '<div style="font-family:Lora,serif;font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.7rem">'+title+'</div><div id="settings-list" style="display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.8rem">'+listHtml+'</div><div style="display:flex;gap:0.5rem;align-items:flex-start;flex-direction:column"><div style="display:flex;gap:0.5rem;width:100%">'+emojiPickerHtml+'<input id="new-item-input" placeholder="'+(withEmoji?'Nome categoria...':'Nuovo metodo...')+'" style="flex:1;border:1px solid var(--border);border-radius:10px;padding:0.45rem 0.8rem;font-family:Nunito,sans-serif;font-size:0.85rem;background:var(--bg);color:var(--text);outline:none"><button onclick="'+addFn+'()" style="background:var(--accent);border:none;border-radius:10px;color:white;padding:0.45rem 1rem;font-family:Nunito,sans-serif;font-size:1.1rem;cursor:pointer">+</button></div>'+emojiGridHtml+'</div>';
+  window._currentSettingsTab = tab;
+}
+function toggleEmojiPicker() {
+  var p = document.getElementById('emoji-picker');
+  p.style.display = p.style.display==='none' ? 'flex' : 'none';
+}
+function selectEmoji(e) {
+  document.getElementById('emoji-btn').textContent = e;
+  document.getElementById('emoji-picker').style.display = 'none';
+}
+function getNewItem(withEmoji) {
+  var label = document.getElementById('new-item-input').value.trim();
+  if (!label) return null;
+  if (withEmoji) { var emoji = document.getElementById('emoji-btn').textContent; return emoji + ' ' + label; }
+  return label;
+}
+function addCatSpesa() { var v=getNewItem(true); if(!v) return; state.catSpese.push(v); saveState(); refreshAllSelects(); renderSettingsTab('spese'); }
+function delCatSpesa(i) { state.catSpese.splice(i,1); saveState(); refreshAllSelects(); renderSettingsTab('spese'); }
+function addCatEntrata() { var v=getNewItem(true); if(!v) return; state.catEntrate.push(v); saveState(); refreshAllSelects(); renderSettingsTab('entrate'); }
+function delCatEntrata(i) { state.catEntrate.splice(i,1); saveState(); refreshAllSelects(); renderSettingsTab('entrate'); }
+function addMetodo() { var v=getNewItem(false); if(!v) return; state.metodiPagamento.push(v); saveState(); refreshAllSelects(); renderSettingsTab('pagamenti'); }
+function delMetodo(i) { state.metodiPagamento.splice(i,1); saveState(); refreshAllSelects(); renderSettingsTab('pagamenti'); }
 
 const MONTHS = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 const CAT_COLORS = { '🍕 Ristoranti / Bar':'#e07a5f','✨ Benessere':'#c084a0','🚗 Trasporti':'#3d405b','👗 Shopping':'#9b5ba0','💊 Salute / Farmacia':'#58a4b0','🎭 Intrattenimento':'#c9a84c','🏠 Casa':'#5b7fa6','🏨 Hotel':'#e0a060','⚽ Sport':'#60a870','📦 Altro':'#9a9080' };
@@ -457,7 +580,12 @@ function importaDati(event) {
       state.ricariche = imported.ricariche || [];
       state.month = imported.month;
       state.year = imported.year;
+      if (imported.catSpese) state.catSpese = imported.catSpese;
+      if (imported.nomeUtente) state.nomeUtente = imported.nomeUtente;
+      if (imported.catEntrate) state.catEntrate = imported.catEntrate;
+      if (imported.metodiPagamento) state.metodiPagamento = imported.metodiPagamento;
       saveState();
+      refreshAllSelects();
       updateDashboard(); renderBudgetChart(); renderSpese(); renderEntrate(); renderTransazioni();
       closeModal();
       alert('Dati importati correttamente! ✅');
@@ -471,6 +599,24 @@ function importaDati(event) {
 function openStorico() {
   renderStorico();
   openModal('storico');
+}
+
+function openImpostazioni() {
+  openModal('impostazioni');
+  showImpSection('menu');
+}
+function showImpSection(section) {
+  ['menu','personalizzazioni','backup','nome'].forEach(function(s) {
+    var el = document.getElementById('imp-'+s);
+    if (el) el.style.display = 'none';
+  });
+  var target = document.getElementById('imp-'+section);
+  if (target) target.style.display = 'block';
+  if (section === 'personalizzazioni') renderSettingsTab('spese');
+  if (section === 'nome') {
+    var inp = document.getElementById('input-nome-utente');
+    if (inp) inp.value = state.nomeUtente || 'Veronica';
+  }
 }
 
 function openModal(type) {
@@ -824,6 +970,8 @@ function updateDashboard() {
 if ('serviceWorker' in navigator) window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 
 document.getElementById('month-label').textContent = MONTHS[state.month]+' '+state.year;
+if(state.nomeUtente) document.getElementById('app-title').textContent = 'Diario Spese: '+state.nomeUtente+' 🌸';
+refreshAllSelects();
 updateDashboard();
 renderBudgetChart();
 renderSpese();
