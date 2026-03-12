@@ -455,6 +455,7 @@ function loadState() {
   return { spese:[], entrate:[], budgets:{}, ricariche:[], month:n.getMonth(), year:n.getFullYear(), nomeUtente:"Veronica", catSpese:["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"], catEntrate:["💼 Stipendio","🎁 Regalo","📦 Altro"], metodiPagamento:["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"] };
 }
 function saveState() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
+function parseAmount(val) { return parseFloat(String(val).replace(',','.')); }
 const state = loadState();
 
 
@@ -632,7 +633,7 @@ function handleOverlayClick(e) { if (e.target===document.getElementById('modal-o
 
 function saveSpesa() {
   const desc = document.getElementById('s-desc').value.trim();
-  const amount = parseFloat(document.getElementById('s-amount').value);
+  const amount = parseAmount(document.getElementById('s-amount').value);
   const cat = document.getElementById('s-cat').value;
   const payment = document.getElementById('s-payment').value;
   const sDateEl = document.getElementById('s-date');
@@ -650,7 +651,7 @@ function toggleStipendioFlag() {
 
 function saveEntrata() {
   const desc = document.getElementById('e-desc').value.trim();
-  const amount = parseFloat(document.getElementById('e-amount').value);
+  const amount = parseAmount(document.getElementById('e-amount').value);
   const cat = document.getElementById('e-cat').value;
   const nextMonth = document.getElementById('e-nextmonth').checked;
   const eDateEl = document.getElementById('e-date');
@@ -685,7 +686,7 @@ function saveBudget() {
 
 function saveRicarica() {
   const carta=document.getElementById('r-carta').value;
-  const amount=parseFloat(document.getElementById('r-amount').value);
+  const amount=parseAmount(document.getElementById('r-amount').value);
   const mm=(state.month+1)<10?'0'+(state.month+1):''+(state.month+1);
   const date=state.year+'-'+mm+'-01';
   const note=document.getElementById('r-note').value;
@@ -712,7 +713,7 @@ function editSpesa(id) {
 function updateSpesa() {
   const id=parseInt(document.getElementById('edit-s-id').value);
   const desc=document.getElementById('edit-s-desc').value.trim();
-  const amount=parseFloat(document.getElementById('edit-s-amount').value);
+  const amount=parseAmount(document.getElementById('edit-s-amount').value);
   const cat=document.getElementById('edit-s-cat').value;
   const payment=document.getElementById('edit-s-payment').value;
   if (!amount||amount<=0) return;
@@ -732,7 +733,7 @@ function editEntrata(id) {
 function updateEntrata() {
   const id=parseInt(document.getElementById('edit-e-id').value);
   const desc=document.getElementById('edit-e-desc').value.trim();
-  const amount=parseFloat(document.getElementById('edit-e-amount').value);
+  const amount=parseAmount(document.getElementById('edit-e-amount').value);
   const cat=document.getElementById('edit-e-cat').value;
   if (!amount||amount<=0) return;
   const e=state.entrate.find(x=>x.id===id); if(!e) return;
