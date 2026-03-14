@@ -19,6 +19,7 @@
   --nav-h: 72px; --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+input, select, textarea { font-size: 16px !important; }
 body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; min-height: 100vh; overscroll-behavior: none; }
 .app { max-width: 430px; margin: 0 auto; min-height: 100vh; background: var(--bg); }
 
@@ -107,6 +108,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
 .bv-delta-main .val.ok { color: #5a8040; }
 .bv-delta-main .val.warn { color: #c07030; }
 .bv-delta-main .val.danger { color: #b04030; }
+
+/* Temi colore */
+body[data-tema="beige"] { --bg:#f5f0e8;--surface:#fdfaf5;--accent:#c4a882;--accent-light:#f2ebe0;--header1:#d8c4a8;--header2:#c4a882;--strip:#c4a882;--text:#1e1408;--muted:#8a7860;--border:#e8e0d0;--red:#d4a090;--gold:#c8a878;--gold-light:#f5ede0; }
+body[data-tema="rosa"] { --bg:#fdf0f5;--surface:#fff5f8;--accent:#d4708a;--accent-light:#fce8ef;--header1:#e8a0b4;--header2:#d4708a;--strip:#d4708a;--text:#2a0a12;--muted:#9a6070;--border:#f0d0da;--red:#d4708a;--gold:#d4708a;--gold-light:#fce8ef; }
+body[data-tema="pesca"] { --bg:#fef3ee;--surface:#fffaf7;--accent:#e8845a;--accent-light:#fde8dd;--header1:#f0aa88;--header2:#e8845a;--strip:#e8845a;--text:#2a1008;--muted:#9a7060;--border:#f0ddd5;--red:#e8845a;--gold:#e8845a;--gold-light:#fde8dd; }
+body[data-tema="lavanda"] { --bg:#f3f0fc;--surface:#f9f7ff;--accent:#8870c8;--accent-light:#ece8f8;--header1:#b0a0d8;--header2:#8870c8;--strip:#8870c8;--text:#180a2a;--muted:#706090;--border:#ddd8f0;--red:#a070c8;--gold:#8870c8;--gold-light:#ece8f8; }
+body[data-tema="salvia"] { --bg:#eff4f0;--surface:#f7faf7;--accent:#6a9870;--accent-light:#ddeedd;--header1:#98c0a0;--header2:#6a9870;--strip:#6a9870;--text:#0a1e0c;--muted:#5a7860;--border:#d0e4d4;--red:#9a7060;--gold:#7a9840;--gold-light:#e8f0d8; }
+body[data-tema="oceano"] { --bg:#eef4f8;--surface:#f5fafd;--accent:#4a88b8;--accent-light:#d8ecf8;--header1:#80b0d0;--header2:#4a88b8;--strip:#4a88b8;--text:#081828;--muted:#507090;--border:#cce0f0;--red:#6888c0;--gold:#4a88b8;--gold-light:#d8ecf8; }
 </style>
 </head>
 <body>
@@ -123,9 +132,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
               <span id="month-label">Marzo 2026</span>
               <button class="month-btn" onclick="changeMonth(1)">›</button>
             </div>
-            <button onclick="openStorico()" style="background:none;border:none;color:rgba(80,55,40,0.7);font-size:0.7rem;font-family:'Nunito',sans-serif;cursor:pointer;padding:0.1rem 0;letter-spacing:0.05em;display:flex;align-items:center;gap:0.3rem;margin-top:0.1rem;">
-              <span>Storico</span>
-            </button>
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.1rem">
+              <button onclick="openStorico()" style="background:none;border:none;color:rgba(80,55,40,0.7);font-size:0.7rem;font-family:'Nunito',sans-serif;cursor:pointer;padding:0;letter-spacing:0.05em">Storico</button>
+              <button onclick="openImpostazioni()" style="background:none;border:none;color:rgba(80,55,40,0.7);font-size:0.85rem;cursor:pointer;padding:0;line-height:1">⚙️</button>
+            </div>
           </div>
           <div class="header-balance">
             <div class="balance-label">Puoi ancora spendere</div>
@@ -229,10 +239,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
 
   <div class="modal" id="modal-storico" style="display:none">
     <div class="modal-handle"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
-      <h3 style="margin:0">📅 Storico mensile</h3>
-      <button onclick="openModal('impostazioni')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;padding:0.2rem">⚙️</button>
-    </div>
+    <h3 style="margin-bottom:1.2rem">📅 Storico mensile</h3>
     <div id="storico-list"><div class="empty"><div class="ei">📅</div><p>Nessun dato storico disponibile</p></div></div>
   </div>
 
@@ -244,7 +251,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
       <h3>⚙️ Impostazioni</h3>
       <div style="display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1.2rem">
         <button onclick="showImpSection('personalizzazioni')" style="width:100%;padding:1rem 1.1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;font-size:0.92rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left;display:flex;align-items:center;justify-content:space-between">
-          <span>🎨 Personalizzazioni<br><span style="font-size:0.75rem;font-weight:400;color:var(--muted)">Gestisci categorie e metodi di pagamento</span></span>
+          <span>🔧 Personalizzazioni<br><span style="font-size:0.75rem;font-weight:400;color:var(--muted)">Gestisci categorie e metodi di pagamento</span></span>
+          <span style="color:var(--muted);font-size:1.1rem">›</span>
+        </button>
+        <button onclick="showImpSection('tema')" style="width:100%;padding:1rem 1.1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;font-size:0.92rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left;display:flex;align-items:center;justify-content:space-between">
+          <span>🎨 Tema colore<br><span style="font-size:0.75rem;font-weight:400;color:var(--muted)">Scegli il colore dell'app</span></span>
           <span style="color:var(--muted);font-size:1.1rem">›</span>
         </button>
         <button onclick="showImpSection('nome')" style="width:100%;padding:1rem 1.1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;font-size:0.92rem;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--text);text-align:left;display:flex;align-items:center;justify-content:space-between">
@@ -263,7 +274,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
     <div id="imp-personalizzazioni" style="display:none">
       <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1rem">
         <button onclick="showImpSection('menu')" style="background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;padding:0">‹</button>
-        <h3 style="margin:0">🎨 Personalizzazioni</h3>
+        <h3 style="margin:0">🔧 Personalizzazioni</h3>
       </div>
       <div style="background:linear-gradient(160deg,#d8c4a8,#c4a882);border-radius:14px;padding:0.8rem 0.8rem 0;margin-bottom:1rem">
         <div style="display:flex">
@@ -293,6 +304,16 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
       <button class="btn-cancel" onclick="showImpSection('menu')" style="width:100%">Indietro</button>
     </div>
 
+    <!-- Vista: Tema -->
+    <div id="imp-tema" style="display:none">
+      <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1.2rem">
+        <button onclick="showImpSection('menu')" style="background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;padding:0">‹</button>
+        <h3 style="margin:0">🎨 Tema colore</h3>
+      </div>
+      <div id="tema-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:1.2rem"></div>
+      <button class="btn-cancel" onclick="showImpSection('menu')" style="width:100%">Indietro</button>
+    </div>
+
     <!-- Vista: Nome -->
     <div id="imp-nome" style="display:none">
       <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1.2rem">
@@ -303,7 +324,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-se
         <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.4rem;font-family:'Nunito',sans-serif">Il titolo apparirà come: <strong>Diario Spese: [Nome] 🌸</strong></div>
         <div style="display:flex;gap:0.5rem;align-items:center">
           <span style="font-size:0.88rem;color:var(--muted);white-space:nowrap;font-family:'Nunito',sans-serif">Diario Spese:</span>
-          <input id="input-nome-utente" type="text" placeholder="Il tuo nome" style="flex:1;border:1.5px solid var(--border);border-radius:10px;padding:0.5rem 0.8rem;font-family:'Nunito',sans-serif;font-size:0.9rem;background:var(--bg);color:var(--text);outline:none">
+          <input id="input-nome-utente" type="text" placeholder="Il tuo nome" style="flex:1;border:1.5px solid var(--border);border-radius:10px;padding:0.5rem 0.8rem;font-family:'Nunito',sans-serif;font-size:16px;background:var(--bg);color:var(--text);outline:none">
         </div>
       </div>
       <button onclick="salvaNome()" style="width:100%;padding:0.9rem;background:var(--accent);border:none;border-radius:12px;color:white;font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;margin-bottom:0.6rem">Salva nome</button>
@@ -452,7 +473,7 @@ const KEY = 'miafinanza_data';
 function loadState() {
   try { const r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch(e) {}
   const n = new Date();
-  return { spese:[], entrate:[], budgets:{}, ricariche:[], month:n.getMonth(), year:n.getFullYear(), nomeUtente:"Veronica", catSpese:["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"], catEntrate:["💼 Stipendio","🎁 Regalo","📦 Altro"], metodiPagamento:["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"] };
+  return { spese:[], entrate:[], budgets:{}, ricariche:[], month:n.getMonth(), year:n.getFullYear(), nomeUtente:"Veronica", tema:"beige", catSpese:["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"], catEntrate:["💼 Stipendio","🎁 Regalo","📦 Altro"], metodiPagamento:["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"] };
 }
 function saveState() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
 function parseAmount(val) { return parseFloat(String(val).replace(',','.')); }
@@ -461,6 +482,7 @@ const state = loadState();
 
 // Ensure legacy state has new fields
 if (!state.nomeUtente) state.nomeUtente = "Veronica";
+if (!state.tema) state.tema = "beige";
 if (!state.catSpese) state.catSpese = ["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"];
 if (!state.catEntrate) state.catEntrate = ["💼 Stipendio","🎁 Regalo","📦 Altro"];
 if (!state.metodiPagamento) state.metodiPagamento = ["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"];
@@ -604,7 +626,48 @@ function changeMonth(d) {
   if (state.month<0) { state.month=11; state.year--; }
   if (state.month>11) { state.month=0; state.year++; }
   saveState();
-  document.getElementById('month-label').textContent = MONTHS[state.month]+' '+state.year;
+  
+function renderTemaGrid() {
+  var grid = document.getElementById('tema-grid');
+  if (!grid) return;
+  var HEADER_COLORS = {
+    beige:'linear-gradient(135deg,#d8c4a8,#c4a882)',
+    rosa:'linear-gradient(135deg,#e8a0b4,#d4708a)',
+    pesca:'linear-gradient(135deg,#f0aa88,#e8845a)',
+    lavanda:'linear-gradient(135deg,#b0a0d8,#8870c8)',
+    salvia:'linear-gradient(135deg,#98c0a0,#6a9870)',
+    oceano:'linear-gradient(135deg,#80b0d0,#4a88b8)'
+  };
+  var labels = {beige:'🌸 Beige',rosa:'🌹 Rosa',pesca:'🍑 Pesca',lavanda:'💜 Lavanda',salvia:'🌿 Salvia',oceano:'🌊 Oceano'};
+  grid.innerHTML = Object.keys(labels).map(function(k) {
+    var active = (state.tema||'beige') === k;
+    return '<button onclick="applyTema(\''+k+'\')" style="border:'+(active?'3px solid #333':'2px solid transparent')+';border-radius:14px;overflow:hidden;cursor:pointer;background:none;padding:0;position:relative">'
+      +'<div style="background:'+HEADER_COLORS[k]+';height:48px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:white;font-family:Nunito,sans-serif">'+labels[k]+'</div>'
+      +(active ? '<div style="position:absolute;top:4px;right:6px;font-size:1rem">✓</div>' : '')
+      +'</button>';
+  }).join('');
+}
+var TEMI = {
+  beige:  { nome:'🌸 Beige',    val:'beige'  },
+  rosa:   { nome:'🌹 Rosa',     val:'rosa'   },
+  pesca:  { nome:'🍑 Pesca',    val:'pesca'  },
+  lavanda:{ nome:'💜 Lavanda',  val:'lavanda'},
+  salvia: { nome:'🌿 Salvia',   val:'salvia' },
+  oceano: { nome:'🌊 Oceano',   val:'oceano' }
+};
+function applyTema(t) {
+  document.body.setAttribute('data-tema', t);
+  state.tema = t;
+  saveState();
+  // update header gradient inline styles
+  var h = document.querySelector('.header');
+  if (h) h.style.background = 'var(--header1)';
+  var strip = document.querySelector('.summary-strip');
+  if (strip) strip.style.background = 'var(--strip)';
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', getComputedStyle(document.body).getPropertyValue('--header1').trim());
+}
+
+document.getElementById('month-label').textContent = MONTHS[state.month]+' '+state.year;
   updateDashboard(); renderBudgetChart(); renderSpese(); renderEntrate(); renderTransazioni();
 }
 
@@ -634,6 +697,7 @@ function importaDati(event) {
       state.year = imported.year;
       if (imported.catSpese) state.catSpese = imported.catSpese;
       if (imported.nomeUtente) state.nomeUtente = imported.nomeUtente;
+      if (imported.tema) state.tema = imported.tema;
       if (imported.catEntrate) state.catEntrate = imported.catEntrate;
       if (imported.metodiPagamento) state.metodiPagamento = imported.metodiPagamento;
       saveState();
@@ -666,13 +730,14 @@ function salvaNome() {
   showImpSection('menu');
 }
 function showImpSection(section) {
-  ['menu','personalizzazioni','backup','nome'].forEach(function(s) {
+  ['menu','personalizzazioni','backup','nome','tema'].forEach(function(s) {
     var el = document.getElementById('imp-'+s);
     if (el) el.style.display = 'none';
   });
   var target = document.getElementById('imp-'+section);
   if (target) target.style.display = 'block';
   if (section === 'personalizzazioni') renderSettingsTab('spese');
+  if (section === 'tema') { renderTemaGrid(); }
   if (section === 'nome') {
     var inp = document.getElementById('input-nome-utente');
     if (inp) inp.value = state.nomeUtente || 'Veronica';
@@ -1029,7 +1094,49 @@ function updateDashboard() {
 
 if ('serviceWorker' in navigator) window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 
+
+function renderTemaGrid() {
+  var grid = document.getElementById('tema-grid');
+  if (!grid) return;
+  var HEADER_COLORS = {
+    beige:'linear-gradient(135deg,#d8c4a8,#c4a882)',
+    rosa:'linear-gradient(135deg,#e8a0b4,#d4708a)',
+    pesca:'linear-gradient(135deg,#f0aa88,#e8845a)',
+    lavanda:'linear-gradient(135deg,#b0a0d8,#8870c8)',
+    salvia:'linear-gradient(135deg,#98c0a0,#6a9870)',
+    oceano:'linear-gradient(135deg,#80b0d0,#4a88b8)'
+  };
+  var labels = {beige:'🌸 Beige',rosa:'🌹 Rosa',pesca:'🍑 Pesca',lavanda:'💜 Lavanda',salvia:'🌿 Salvia',oceano:'🌊 Oceano'};
+  grid.innerHTML = Object.keys(labels).map(function(k) {
+    var active = (state.tema||'beige') === k;
+    return '<button onclick="applyTema(\''+k+'\')" style="border:'+(active?'3px solid #333':'2px solid transparent')+';border-radius:14px;overflow:hidden;cursor:pointer;background:none;padding:0;position:relative">'
+      +'<div style="background:'+HEADER_COLORS[k]+';height:48px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:white;font-family:Nunito,sans-serif">'+labels[k]+'</div>'
+      +(active ? '<div style="position:absolute;top:4px;right:6px;font-size:1rem">✓</div>' : '')
+      +'</button>';
+  }).join('');
+}
+var TEMI = {
+  beige:  { nome:'🌸 Beige',    val:'beige'  },
+  rosa:   { nome:'🌹 Rosa',     val:'rosa'   },
+  pesca:  { nome:'🍑 Pesca',    val:'pesca'  },
+  lavanda:{ nome:'💜 Lavanda',  val:'lavanda'},
+  salvia: { nome:'🌿 Salvia',   val:'salvia' },
+  oceano: { nome:'🌊 Oceano',   val:'oceano' }
+};
+function applyTema(t) {
+  document.body.setAttribute('data-tema', t);
+  state.tema = t;
+  saveState();
+  // update header gradient inline styles
+  var h = document.querySelector('.header');
+  if (h) h.style.background = 'var(--header1)';
+  var strip = document.querySelector('.summary-strip');
+  if (strip) strip.style.background = 'var(--strip)';
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', getComputedStyle(document.body).getPropertyValue('--header1').trim());
+}
+
 document.getElementById('month-label').textContent = MONTHS[state.month]+' '+state.year;
+applyTema(state.tema || 'beige');
 if(state.nomeUtente) document.getElementById('app-title').textContent = 'Diario Spese: '+state.nomeUtente+' 🌸';
 refreshAllSelects();
 updateDashboard();
