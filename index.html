@@ -487,13 +487,15 @@ function renderSettingsTab(tab) {
     b.style.fontWeight = b.dataset.tab===tab ? '700' : '500';
   });
   var cont = document.getElementById('settings-content');
-  var EMOJIS = ["🧺","🍕","✨","🚗","👗","💊","🎭","🏠","🏨","⚽","📦","💼","💸","🎁","📈","🛍️","☕","🎓","💻","🐾","✈️","🎵","🍷","🏋️","💅","🌿","🛒","📱","🎮","🏥","🚿","⚡","🎨","📚","🍔","🧴","🐶","🌺","💈","🚲"];
+  var EMOJIS = ["🧺","🍕","🍔","🍣","🍜","🍝","🥗","🥩","🍗","🥚","🧀","🥖","🍰","🎂","🍦","🍩","☕","🍵","🧃","🍺","🍷","🥂","🧋","🍫","🍬","🏠","🛋️","🛏️","🪴","🧹","🔧","💡","🪟","🚪","🛁","🚿","🧴","🧻","🪣","🔑","🚗","✈️","🚂","🚌","🛵","🚲","🛻","⛽","🅿️","🚕","🛳️","🚁","👗","👠","👜","🛍️","💍","👒","🧣","🧥","👔","💄","🪞","👟","💊","🏥","🩺","🧘","🏋️","💅","🪥","🧖","🩹","❤️","🫀","🌡️","🎭","🎵","🎮","🎨","📚","🎬","🎤","🎸","🎯","🎲","🃏","🎻","📷","🏊","⚽","🎾","🏀","🎿","🏄","🧗","💼","💻","📱","📊","💸","📈","🏦","🧾","✏️","📋","🖨️","📞","🎁","🎀","🥳","👶","🐾","🐶","🐱","💑","👨‍👩‍👧","🌹","🌿","🌺","🌍","⚡","🌙","☀️","🌈","🏔️","🏖️","🌊","❄️","🔥","📦","⭐","🔔","💬","🏷️","🗓️","🎓","🏨","🎠","🎡"];
   var items, addFn, deleteFn, title, withEmoji;
   if (tab==='spese') { items=state.catSpese; addFn='addCatSpesa'; deleteFn='delCatSpesa'; title='Categorie di Spesa'; withEmoji=true; }
   else if (tab==='entrate') { items=state.catEntrate; addFn='addCatEntrata'; deleteFn='delCatEntrata'; title='Categorie di Entrata'; withEmoji=true; }
   else { items=state.metodiPagamento; addFn='addMetodo'; deleteFn='delMetodo'; title='Metodi di Pagamento'; withEmoji=false; }
   var listHtml = items.map(function(item,i) {
-    return '<div style="display:flex;align-items:center;background:var(--surface);border-radius:12px;padding:0.6rem 0.9rem;border:1px solid var(--border);gap:0.7rem">'+(withEmoji?'<span style="font-size:1.1rem;min-width:24px">'+item.split(" ")[0]+'</span>':'')+'<span style="flex:1;font-size:0.87rem;color:var(--text)">'+(withEmoji?item.split(" ").slice(1).join(" "):item)+'</span><button onclick="'+deleteFn+'('+i+')" style="background:none;border:none;color:var(--red);font-size:0.8rem;cursor:pointer;font-family:Nunito,sans-serif">elimina</button></div>';
+    var upBtn = i>0 ? '<button onclick="moveItem(\''+tab+'\','+i+',-1)" style="background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 0.1rem;line-height:1">▲</button>' : '<span style="width:1.2rem;display:inline-block"></span>';
+    var dnBtn = i<items.length-1 ? '<button onclick="moveItem(\''+tab+'\','+i+',1)" style="background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 0.1rem;line-height:1">▼</button>' : '<span style="width:1.2rem;display:inline-block"></span>';
+    return '<div style="display:flex;align-items:center;background:var(--surface);border-radius:12px;padding:0.5rem 0.7rem;border:1px solid var(--border);gap:0.5rem">'+(withEmoji?'<span style="font-size:1.1rem;min-width:24px">'+item.split(" ")[0]+'</span>':'')+'<span style="flex:1;font-size:0.87rem;color:var(--text)">'+(withEmoji?item.split(" ").slice(1).join(" "):item)+'</span><div style="display:flex;flex-direction:column;gap:0">'+upBtn+dnBtn+'</div><button onclick="editItem(\''+tab+'\','+i+')" style="background:none;border:none;color:var(--accent);font-size:0.8rem;cursor:pointer;font-family:Nunito,sans-serif">modifica</button><button onclick="'+deleteFn+'('+i+')" style="background:none;border:none;color:var(--red);font-size:0.8rem;cursor:pointer;font-family:Nunito,sans-serif">elimina</button></div>';
   }).join('');
   var emojiPickerHtml = withEmoji ? '<button onclick="toggleEmojiPicker()" id="emoji-btn" style="font-size:1.3rem;background:var(--accent-light);border:1px solid var(--border);border-radius:10px;padding:0.35rem 0.6rem;cursor:pointer;min-width:48px">📦</button>' : '';
   var emojiGridHtml = withEmoji ? '<div id="emoji-picker" style="display:none;flex-wrap:wrap;gap:0.3rem;max-height:90px;overflow-y:auto;width:100%">'+EMOJIS.map(function(e){return '<button onclick="selectEmoji(\''+e+'\')" style="font-size:1.2rem;background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.25rem 0.35rem;cursor:pointer">'+e+'</button>';}).join('')+'</div>' : '';
@@ -513,6 +515,55 @@ function getNewItem(withEmoji) {
   if (!label) return null;
   if (withEmoji) { var emoji = document.getElementById('emoji-btn').textContent; return emoji + ' ' + label; }
   return label;
+}
+function editItem(tab, i) {
+  var arr = tab==='spese' ? state.catSpese : tab==='entrate' ? state.catEntrate : state.metodiPagamento;
+  var withEmoji = tab !== 'pagamenti';
+  var item = arr[i];
+  var emoji = withEmoji ? item.split(' ')[0] : '';
+  var label = withEmoji ? item.split(' ').slice(1).join(' ') : item;
+
+  // Replace the row with an edit form
+  var rows = document.getElementById('settings-list').children;
+  var row = rows[i];
+  row.style.flexDirection = 'column';
+  row.style.alignItems = 'stretch';
+  row.style.gap = '0.5rem';
+  row.innerHTML = '<div style="display:flex;gap:0.5rem;align-items:center">'
+    + (withEmoji ? '<button id="edit-emoji-btn" onclick="toggleEditEmojiPicker()" style="font-size:1.3rem;background:var(--accent-light);border:1px solid var(--border);border-radius:10px;padding:0.3rem 0.5rem;cursor:pointer;min-width:44px">'+emoji+'</button>' : '')
+    + '<input id="edit-item-input" value="'+label+'" style="flex:1;border:1px solid var(--border);border-radius:10px;padding:0.4rem 0.7rem;font-family:Nunito,sans-serif;font-size:0.85rem;background:var(--bg);color:var(--text);outline:none">'
+    + '<button onclick="saveEditItem(\''+tab+'\','+i+')" style="background:var(--accent);border:none;border-radius:10px;color:white;padding:0.4rem 0.8rem;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer">✓</button>'
+    + '<button onclick="renderSettingsTab(\''+tab+'\')" style="background:none;border:1px solid var(--border);border-radius:10px;color:var(--muted);padding:0.4rem 0.6rem;font-family:Nunito,sans-serif;cursor:pointer">✕</button>'
+    + '</div>'
+    + (withEmoji ? '<div id="edit-emoji-picker" style="display:none;flex-wrap:wrap;gap:0.25rem;max-height:80px;overflow-y:auto">'+["🧺","🍕","🍔","🍣","🍜","🍝","🥗","🥩","🍗","🥚","🧀","🥖","🍰","🎂","🍦","🍩","☕","🍵","🧃","🍺","🍷","🥂","🧋","🍫","🍬","🏠","🛋️","🛏️","🪴","🧹","🔧","💡","🪟","🚪","🛁","🚿","🧴","🧻","🪣","🔑","🚗","✈️","🚂","🚌","🛵","🚲","🛻","⛽","🅿️","🚕","🛳️","🚁","👗","👠","👜","🛍️","💍","👒","🧣","🧥","👔","💄","🪞","👟","💊","🏥","🩺","🧘","🏋️","💅","🪥","🧖","🩹","❤️","🫀","🌡️","🎭","🎵","🎮","🎨","📚","🎬","🎤","🎸","🎯","🎲","🃏","🎻","📷","🏊","⚽","🎾","🏀","🎿","🏄","🧗","💼","💻","📱","📊","💸","📈","🏦","🧾","✏️","📋","🖨️","📞","🎁","🎀","🥳","👶","🐾","🐶","🐱","💑","👨‍👩‍👧","🌹","🌿","🌺","🌍","⚡","🌙","☀️","🌈","🏔️","🏖️","🌊","❄️","🔥","📦","⭐","🔔","💬","🏷️","🗓️","🎓","🏨","🎠","🎡"].map(function(e){return '<button onclick="selectEditEmoji(\''+e+'\')" style="font-size:1.1rem;background:transparent;border:1px solid var(--border);border-radius:6px;padding:0.2rem 0.3rem;cursor:pointer">'+e+'</button>';}).join('')+'</div>' : '');
+}
+function toggleEditEmojiPicker() {
+  var p = document.getElementById('edit-emoji-picker');
+  p.style.display = p.style.display==='none' ? 'flex' : 'none';
+}
+function selectEditEmoji(e) {
+  document.getElementById('edit-emoji-btn').textContent = e;
+  document.getElementById('edit-emoji-picker').style.display = 'none';
+}
+function saveEditItem(tab, i) {
+  var arr = tab==='spese' ? state.catSpese : tab==='entrate' ? state.catEntrate : state.metodiPagamento;
+  var withEmoji = tab !== 'pagamenti';
+  var label = document.getElementById('edit-item-input').value.trim();
+  if (!label) return;
+  if (withEmoji) {
+    var emoji = document.getElementById('edit-emoji-btn').textContent;
+    arr[i] = emoji + ' ' + label;
+  } else {
+    arr[i] = label;
+  }
+  saveState(); refreshAllSelects(); renderSettingsTab(tab);
+}
+function moveItem(tab, i, dir) {
+  var arr = tab==='spese' ? state.catSpese : tab==='entrate' ? state.catEntrate : state.metodiPagamento;
+  var j = i + dir;
+  if (j < 0 || j >= arr.length) return;
+  var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  saveState(); refreshAllSelects(); renderSettingsTab(tab);
 }
 function addCatSpesa() { var v=getNewItem(true); if(!v) return; state.catSpese.push(v); saveState(); refreshAllSelects(); renderSettingsTab('spese'); }
 function delCatSpesa(i) { state.catSpese.splice(i,1); saveState(); refreshAllSelects(); renderSettingsTab('spese'); }
@@ -604,6 +655,14 @@ function openStorico() {
 
 function openImpostazioni() {
   openModal('impostazioni');
+  showImpSection('menu');
+}
+function salvaNome() {
+  var nome = document.getElementById('input-nome-utente').value.trim();
+  if (!nome) return;
+  state.nomeUtente = nome;
+  saveState();
+  document.getElementById('app-title').textContent = 'Diario Spese: ' + nome + ' 🌸';
   showImpSection('menu');
 }
 function showImpSection(section) {
