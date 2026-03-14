@@ -124,7 +124,11 @@ body[data-tema="oceano"] { --bg:#eef4f8;--surface:#f5fafd;--accent:#4a88b8;--acc
   <div class="header">
     <div class="header-row">
       <div style="display:flex;flex-direction:column;align-items:center;width:100%;gap:0.5rem">
-        <div class="header-title" style="text-align:center" id="app-title">Diario Spese: Veronica 🌸</div>
+        <div style="display:flex;align-items:center;width:100%;justify-content:space-between;margin-bottom:0.1rem">
+          <button onclick="openImpostazioni()" style="background:none;border:none;color:rgba(80,55,40,0.7);font-size:1.3rem;cursor:pointer;padding:0;line-height:1">⚙️</button>
+          <div class="header-title" style="text-align:center" id="app-title">Diario Spese: Veronica 🌸</div>
+          <div style="width:1.5rem"></div>
+        </div>
         <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
           <div>
             <div class="header-month">
@@ -134,7 +138,6 @@ body[data-tema="oceano"] { --bg:#eef4f8;--surface:#f5fafd;--accent:#4a88b8;--acc
             </div>
             <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.1rem">
               <button onclick="openStorico()" style="background:none;border:none;color:rgba(80,55,40,0.7);font-size:0.7rem;font-family:'Nunito',sans-serif;cursor:pointer;padding:0;letter-spacing:0.05em">Storico</button>
-              <button onclick="openImpostazioni()" style="background:none;border:none;color:rgba(80,55,40,0.7);font-size:0.85rem;cursor:pointer;padding:0;line-height:1">⚙️</button>
             </div>
           </div>
           <div class="header-balance">
@@ -390,6 +393,7 @@ body[data-tema="oceano"] { --bg:#eef4f8;--surface:#f5fafd;--accent:#4a88b8;--acc
     <div class="modal-handle"></div>
     <h3>📊 Budget Mensile</h3>
     <div class="form-group"><label>Voglio risparmiare questo mese (€)</label><input type="text" id="b-risparmio" placeholder="es. 300" inputmode="decimal"></div>
+    <div class="form-group"><label>Accantonamento mensile (€)</label><input type="text" id="b-investimento" placeholder="es. 200" inputmode="decimal"></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Annulla</button>
       <button class="btn-save" onclick="saveBudget()">Salva</button>
@@ -440,6 +444,7 @@ body[data-tema="oceano"] { --bg:#eef4f8;--surface:#f5fafd;--accent:#4a88b8;--acc
         <option>Revolut</option><option>Carta di credito</option><option>Bancomat</option><option>Satispay</option><option>PayPal</option><option>Contanti</option>
       </select>
     </div>
+    <div class="form-group"><label>Data</label><input type="date" id="edit-s-date"></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Annulla</button>
       <button class="btn-save" onclick="updateSpesa()">Salva modifiche</button>
@@ -460,6 +465,7 @@ body[data-tema="oceano"] { --bg:#eef4f8;--surface:#f5fafd;--accent:#4a88b8;--acc
         <option>💼 Stipendio</option><option>🎁 Regalo</option><option>📦 Altro</option>
       </select>
     </div>
+    <div class="form-group"><label>Data</label><input type="date" id="edit-e-date"></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Annulla</button>
       <button class="btn-save" onclick="updateEntrata()">Salva modifiche</button>
@@ -749,6 +755,7 @@ function openModal(type) {
   document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
   document.getElementById('modal-'+type).style.display='block';
   if (type==='ricarica') document.getElementById('r-date').value=new Date().toISOString().split('T')[0];
+  if (type==='budget') { const b=getBudget(); document.getElementById('b-risparmio').value=b.risparmio||''; document.getElementById('b-investimento').value=b.investimento||''; }
   if (type==='spesa') { var sd=document.getElementById('s-date'); if(sd) sd.value=new Date().toISOString().split('T')[0]; }
   if (type==='entrata') { var ed=document.getElementById('e-date'); if(ed) ed.value=new Date().toISOString().split('T')[0]; }
 }
@@ -798,13 +805,16 @@ function saveEntrata() {
 }
 
 function saveBudget() {
-  const risparmio = parseFloat(document.getElementById('b-risparmio').value)||0;
-  if (!risparmio) return;
+  const risparmio = parseAmount(document.getElementById('b-risparmio').value)||0;
+  const investimento = parseAmount(document.getElementById('b-investimento').value)||0;
+  if (!risparmio && !investimento) return;
   const key=state.year+'-'+state.month;
   if (!state.budgets) state.budgets={};
   if (!state.budgets[key]) state.budgets[key]={};
-  state.budgets[key].risparmio=risparmio;
+  if (risparmio) state.budgets[key].risparmio=risparmio;
+  if (investimento) state.budgets[key].investimento=investimento; else delete state.budgets[key].investimento;
   document.getElementById('b-risparmio').value='';
+  document.getElementById('b-investimento').value='';
   saveState(); closeModal(); updateDashboard(); renderBudgetChart();
 }
 
@@ -830,8 +840,9 @@ function editSpesa(id) {
   document.getElementById('edit-s-id').value=id;
   document.getElementById('edit-s-desc').value=s.desc||'';
   document.getElementById('edit-s-amount').value=s.amount;
-  document.getElementById('edit-s-cat').value=s.cat;
-  document.getElementById('edit-s-payment').value=s.payment||'Revolut';
+  populateSelect('edit-s-cat', state.catSpese, s.cat);
+  populateSelect('edit-s-payment', state.metodiPagamento, s.payment||state.metodiPagamento[0]);
+  document.getElementById('edit-s-date').value=s.date||'';
   openModal('edit-spesa');
 }
 function updateSpesa() {
@@ -842,7 +853,9 @@ function updateSpesa() {
   const payment=document.getElementById('edit-s-payment').value;
   if (!amount||amount<=0) return;
   const s=state.spese.find(x=>x.id===id); if(!s) return;
+  const sDate=document.getElementById('edit-s-date').value;
   s.desc=desc||cat; s.amount=amount; s.cat=cat; s.payment=payment;
+  if(sDate) s.date=sDate;
   saveState(); closeModal(); renderSpese(); renderTransazioni(); updateDashboard(); renderBudgetChart();
 }
 
@@ -851,7 +864,8 @@ function editEntrata(id) {
   document.getElementById('edit-e-id').value=id;
   document.getElementById('edit-e-desc').value=e.desc||'';
   document.getElementById('edit-e-amount').value=e.amount;
-  document.getElementById('edit-e-cat').value=e.cat;
+  populateSelect('edit-e-cat', state.catEntrate, e.cat);
+  document.getElementById('edit-e-date').value=e.date||'';
   openModal('edit-entrata');
 }
 function updateEntrata() {
@@ -861,7 +875,9 @@ function updateEntrata() {
   const cat=document.getElementById('edit-e-cat').value;
   if (!amount||amount<=0) return;
   const e=state.entrate.find(x=>x.id===id); if(!e) return;
+  const eDate=document.getElementById('edit-e-date').value;
   e.desc=desc||cat; e.amount=amount; e.cat=cat;
+  if(eDate) e.date=eDate;
   saveState(); closeModal(); renderEntrate(); renderTransazioni(); updateDashboard(); renderBudgetChart();
 }
 
@@ -875,11 +891,12 @@ document.addEventListener('click', function(e) {
   else if (type==='del-ricarica') { del(state.ricariche,id); renderRicariche(); }
 });
 
+function sortByDate(a,b){ var da=a.date?new Date(a.date):null, db=b.date?new Date(b.date):null; if(da&&db) return db-da; if(da) return -1; if(db) return 1; return b.id-a.id; }
 function renderSpese() {
   const el=document.getElementById('spese-list');
   const filtered=state.spese.filter(s=>s.month===state.month&&s.year===state.year);
   if (!filtered.length) { el.innerHTML='<div class="empty"><div class="ei">🛒</div><p>Nessuna spesa questo mese</p></div>'; return; }
-  el.innerHTML=filtered.slice().reverse().map(s=>
+  el.innerHTML=filtered.slice().sort(sortByDate).map(s=>
       '<div class="tx-item">'+
       '<div class="tx-icon" style="background:'+(CAT_COLORS[s.cat]||'#999')+'22">'+s.cat.split(' ')[0]+'</div>'+
       '<div class="tx-info"><div class="tx-name">'+s.desc+'</div>'+
@@ -904,7 +921,7 @@ function renderEntrate() {
   if (curr.length) {
     if (stip.length) html+='<div style="border-top:1px solid var(--border);margin:0.8rem 0"></div>';
     html+='<div style="font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem">📅 Entrate di questo mese</div>';
-    html+=curr.slice().reverse().map(e=>'<div class="tx-item"><div class="tx-icon" style="background:var(--accent-light)">'+e.cat.split(' ')[0]+'</div>'+
+    html+=curr.slice().sort(sortByDate).map(e=>'<div class="tx-item"><div class="tx-icon" style="background:var(--accent-light)">'+e.cat.split(' ')[0]+'</div>'+
       '<div class="tx-info"><div class="tx-name">'+e.desc+'</div><div class="tx-cat">'+e.cat+(e.date?' · '+new Date(e.date).toLocaleDateString("it-IT",{day:"2-digit",month:"short"}):'')+'</div></div>'+
       '<div class="tx-right"><div class="tx-amount pos">+€'+e.amount.toFixed(2)+'</div></div></div>').join('');
   }
@@ -917,7 +934,7 @@ function renderTransazioni() {
   let pm=state.month-1,py=state.year; if(pm<0){pm=11;py--;}
   const stip=state.entrate.filter(e=>e.month===pm&&e.year===py&&e.nextMonth);
   const curr=state.entrate.filter(e=>e.month===state.month&&e.year===state.year&&!e.nextMonth);
-  const all=[...sp.map(s=>Object.assign({},s,{type:'spesa'})),...curr.map(e=>Object.assign({},e,{type:'entrata'})),...stip.map(e=>Object.assign({},e,{type:'stipendio'}))].sort((a,b)=>b.id-a.id);
+  const all=[...sp.map(s=>Object.assign({},s,{type:'spesa'})),...curr.map(e=>Object.assign({},e,{type:'entrata'})),...stip.map(e=>Object.assign({},e,{type:'stipendio'}))].sort(sortByDate);
   if (!all.length) { el.innerHTML='<div class="empty"><div class="ei">📝</div><p>Nessuna transazione questo mese</p></div>'; return; }
   el.innerHTML=all.map(t=>{
     const isSp=t.type==='spesa', isSti=t.type==='stipendio';
@@ -972,25 +989,27 @@ function renderRicariche() {
 
 function renderBudgetChart() {
   const el=document.getElementById('budget-chart-home'); if(!el) return;
-  const ti=getIncome(), te=getExpenses(), bud=getBudget(), ob=bud.risparmio||0;
-  if (!ti&&!te&&!ob) { el.innerHTML='<div class="empty"><div class="ei">📊</div><p>Aggiungi entrate e imposta un obiettivo</p></div>'; return; }
-  const sa=ti-te, delta=ob>0?sa-ob:null, mx=Math.max(ti,te,ob,1), BH=140;
+  const ti=getIncome(), te=getExpenses(), bud=getBudget(), ob=bud.risparmio||0, inv=bud.investimento||0;
+  if (!ti&&!te&&!ob&&!inv) { el.innerHTML='<div class="empty"><div class="ei">📊</div><p>Aggiungi entrate e imposta un obiettivo</p></div>'; return; }
+  const sa=ti-te, delta=(ob>0||inv>0)?sa-ob-inv:null, mx=Math.max(ti,te,ob,inv,1), BH=140;
   const bh=v=>Math.max(4,Math.round((v/mx)*BH));
   const dc=delta===null?'':delta>=0?'ok':delta>-ob*0.3?'warn':'danger';
   const dv=delta!==null?(delta>=0?'+':'')+' €'+delta.toFixed(2):(sa>=0?'+':'')+' €'+sa.toFixed(2);
   const obBar=ob>0?'<div class="bv-bar-wrap"><div class="bv-bar-val">€'+ob.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(ob)+'px;background:#c8a878;opacity:0.7;border:2px dashed #a8885a"></div><div class="bv-bar-label">Obiettivo</div></div>':'';
+  const invBar=inv>0?'<div class="bv-bar-wrap"><div class="bv-bar-val">€'+inv.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(inv)+'px;background:#8870c8;opacity:0.7;border:2px dashed #6850a8"></div><div class="bv-bar-label">Riserva</div></div>':'';
   const obRow=ob>0?'<div class="bv-delta-row"><span class="bv-delta-label">🎯 Obiettivo risparmio</span><span class="bv-delta-val" style="color:#a8885a">€'+ob.toFixed(2)+'</span></div>':'';
+  const invRow=inv>0?'<div class="bv-delta-row"><span class="bv-delta-label">💼 Accantonamento</span><span class="bv-delta-val" style="color:#8870c8">€'+inv.toFixed(2)+'</span></div>':'';
   el.innerHTML='<div class="budget-visual">'+
     '<div class="bv-bars">'+
     '<div class="bv-bar-wrap"><div class="bv-bar-val">€'+ti.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(ti)+'px;background:#a8c890"></div><div class="bv-bar-label">Entrate</div></div>'+
     '<div class="bv-bar-wrap"><div class="bv-bar-val">€'+te.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(te)+'px;background:#d4a090"></div><div class="bv-bar-label">Spese</div></div>'+
-    obBar+
+    obBar+invBar+
     '<div class="bv-bar-wrap"><div class="bv-bar-val" style="color:'+(sa>=0?'#5a8040':'#b04030')+'">'+(sa>=0?'+':'')+' €'+sa.toFixed(2)+'</div><div class="bv-bar-col" style="height:'+bh(Math.abs(sa))+'px;background:'+(sa>=0?'#7aaa58':'#c87060')+'"></div><div class="bv-bar-label">Saldo</div></div>'+
     '</div><div class="bv-baseline"></div>'+
     '<div class="bv-delta">'+
     '<div class="bv-delta-row"><span class="bv-delta-label">💰 Entrate</span><span class="bv-delta-val" style="color:#5a8040">+€'+ti.toFixed(2)+'</span></div>'+
     '<div class="bv-delta-row"><span class="bv-delta-label">🛒 Spese</span><span class="bv-delta-val" style="color:#b04030">-€'+te.toFixed(2)+'</span></div>'+
-    obRow+
+    obRow+invRow+
     '<div class="bv-delta-main"><span class="label">'+(delta!==null?'Delta obiettivo':'Saldo attuale')+'</span><span class="val '+dc+'">'+dv+'</span></div>'+
     '</div></div>';
 }
@@ -1068,14 +1087,14 @@ function renderStorico() {
 }
 
 function updateDashboard() {
-  const ti=getIncome(), te=getExpenses(), bal=ti-te, bud=getBudget(), ob=bud.risparmio||0;
+  const ti=getIncome(), te=getExpenses(), bal=ti-te, bud=getBudget(), ob=bud.risparmio||0, inv=bud.investimento||0;
   document.getElementById('strip-income').textContent='€'+ti.toFixed(2);
   document.getElementById('strip-expenses').textContent='€'+te.toFixed(2);
   const hdr=document.getElementById('hdr-balance');
-  if (!ob) { hdr.textContent='—'; hdr.style.color='#fff8f0'; hdr.style.fontSize='1.6rem'; }
+  if (!ob && !inv) { hdr.textContent='—'; hdr.style.color='#fff8f0'; hdr.style.fontSize='1.6rem'; }
   else {
-    const spendibile = ti - ob;  // entrate totali - obiettivo risparmio
-    const rimanente = spendibile - te;  // quanto ti rimane da spendere
+    const spendibile = ti - ob - inv;
+    const rimanente = spendibile - te;
     if (rimanente <= 0) { hdr.textContent='⚠️ Stop'; hdr.style.color='#f0c8b8'; hdr.style.fontSize='1.3rem'; }
     else { hdr.textContent='€'+Math.ceil(rimanente); hdr.style.color= rimanente < spendibile*0.2 ? '#f0d898' : '#d4f0c8'; hdr.style.fontSize='1.6rem'; }
   }
