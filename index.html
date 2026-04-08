@@ -821,8 +821,7 @@ function saveBudget() {
 function saveRicarica() {
   const carta=document.getElementById('r-carta').value;
   const amount=parseAmount(document.getElementById('r-amount').value);
-  const mm=(state.month+1)<10?'0'+(state.month+1):''+(state.month+1);
-  const date=state.year+'-'+mm+'-01';
+  const date=document.getElementById('r-date').value;
   const note=document.getElementById('r-note').value;
   if (!amount||amount<=0) return;
   if (!state.ricariche) state.ricariche=[];
@@ -891,7 +890,7 @@ document.addEventListener('click', function(e) {
   else if (type==='del-ricarica') { del(state.ricariche,id); renderRicariche(); }
 });
 
-function sortByDate(a,b){ var da=a.date?new Date(a.date):null, db=b.date?new Date(b.date):null; if(da&&db) return db-da; if(da) return -1; if(db) return 1; return b.id-a.id; }
+function sortByDate(a,b){ var da=a.date?new Date(a.date):null, db=b.date?new Date(b.date):null; if(da&&db){ var diff=db-da; return diff!==0?diff:b.id-a.id; } if(da) return -1; if(db) return 1; return b.id-a.id; }
 function renderSpese() {
   const el=document.getElementById('spese-list');
   const filtered=state.spese.filter(s=>s.month===state.month&&s.year===state.year);
