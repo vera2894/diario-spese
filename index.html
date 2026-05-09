@@ -479,7 +479,7 @@ const KEY = 'miafinanza_data';
 function loadState() {
   try { const r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch(e) {}
   const n = new Date();
-  return { spese:[], entrate:[], budgets:{}, ricariche:[], month:n.getMonth(), year:n.getFullYear(), nomeUtente:"Veronica", tema:"beige", catSpese:["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"], catEntrate:["💼 Stipendio","🎁 Regalo","📦 Altro"], metodiPagamento:["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"] };
+  return { spese:[], entrate:[], budgets:{}, ricariche:[], month:n.getMonth(), year:n.getFullYear(), nomeUtente:"Veronica", tema:"beige", catSpese:["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"], catEntrate:["💼 Stipendio","🎁 Regalo","📦 Altro"], metodiPagamento:["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"], metodiPosticipati:["Carta di credito"] };
 }
 function saveState() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
 function parseAmount(val) { return parseFloat(String(val).replace(',','.')); }
@@ -492,6 +492,7 @@ if (!state.tema) state.tema = "beige";
 if (!state.catSpese) state.catSpese = ["🧺 Spesa alimentare","🍕 Ristoranti / Bar","✨ Benessere","🚗 Trasporti","👗 Shopping","💊 Salute / Farmacia","🎭 Intrattenimento","🏠 Casa","🏨 Hotel","⚽ Sport","📦 Altro"];
 if (!state.catEntrate) state.catEntrate = ["💼 Stipendio","🎁 Regalo","📦 Altro"];
 if (!state.metodiPagamento) state.metodiPagamento = ["Revolut","Carta di credito","Bancomat","Satispay","PayPal","Contanti"];
+if (!state.metodiPosticipati) state.metodiPosticipati = ["Carta di credito"];
 
 function populateSelect(id, items, selectedVal) {
   const el = document.getElementById(id);
@@ -523,7 +524,9 @@ function renderSettingsTab(tab) {
   var listHtml = items.map(function(item,i) {
     var upBtn = i>0 ? '<button onclick="moveItem(\''+tab+'\','+i+',-1)" style="background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 0.1rem;line-height:1">▲</button>' : '<span style="width:1.2rem;display:inline-block"></span>';
     var dnBtn = i<items.length-1 ? '<button onclick="moveItem(\''+tab+'\','+i+',1)" style="background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 0.1rem;line-height:1">▼</button>' : '<span style="width:1.2rem;display:inline-block"></span>';
-    return '<div style="display:flex;align-items:center;background:var(--surface);border-radius:12px;padding:0.5rem 0.7rem;border:1px solid var(--border);gap:0.5rem">'+(withEmoji?'<span style="font-size:1.1rem;min-width:24px">'+item.split(" ")[0]+'</span>':'')+'<span style="flex:1;font-size:0.87rem;color:var(--text)">'+(withEmoji?item.split(" ").slice(1).join(" "):item)+'</span><div style="display:flex;flex-direction:column;gap:0">'+upBtn+dnBtn+'</div><button onclick="editItem(\''+tab+'\','+i+')" style="background:none;border:none;color:var(--accent);font-size:0.8rem;cursor:pointer;font-family:Nunito,sans-serif">modifica</button><button onclick="'+deleteFn+'('+i+')" style="background:none;border:none;color:var(--red);font-size:0.8rem;cursor:pointer;font-family:Nunito,sans-serif">elimina</button></div>';
+    var isPosticipato = !withEmoji && state.metodiPosticipati && state.metodiPosticipati.indexOf(item)>=0;
+    var posticipoBadge = !withEmoji ? '<button onclick="togglePosticipato(\''+item+'\')" title="Posticipa al mese successivo" style="background:'+(isPosticipato?'var(--accent)':'transparent')+';border:1px solid var(--border);border-radius:6px;color:'+(isPosticipato?'white':'var(--muted)')+';font-size:0.65rem;cursor:pointer;padding:0.15rem 0.35rem;font-family:Nunito,sans-serif;white-space:nowrap">'+(isPosticipato?'⏭ Posticipato':'⏭')+' </button>' : '';
+    return '<div style="display:flex;align-items:center;background:var(--surface);border-radius:12px;padding:0.5rem 0.7rem;border:1px solid var(--border);gap:0.5rem">'+(withEmoji?'<span style="font-size:1.1rem;min-width:24px">'+item.split(" ")[0]+'</span>':'')+'<span style="flex:1;font-size:0.87rem;color:var(--text)">'+(withEmoji?item.split(" ").slice(1).join(" "):item)+'</span>'+posticipoBadge+'<div style="display:flex;flex-direction:column;gap:0">'+upBtn+dnBtn+'</div><button onclick="editItem(\''+tab+'\','+i+')" style="background:none;border:none;color:var(--accent);font-size:0.8rem;cursor:pointer;font-family:Nunito,sans-serif">modifica</button><button onclick="'+deleteFn+'('+i+')" style="background:none;border:none;color:var(--red);font-size:0.8rem;cursor:pointer;font-family:Nunito,sans-serif">elimina</button></div>';
   }).join('');
   var emojiPickerHtml = withEmoji ? '<button onclick="toggleEmojiPicker()" id="emoji-btn" style="font-size:1.3rem;background:var(--accent-light);border:1px solid var(--border);border-radius:10px;padding:0.35rem 0.6rem;cursor:pointer;min-width:48px">📦</button>' : '';
   var emojiGridHtml = withEmoji ? '<div id="emoji-picker" style="display:none;flex-wrap:wrap;gap:0.3rem;max-height:90px;overflow-y:auto;width:100%">'+EMOJIS.map(function(e){return '<button onclick="selectEmoji(\''+e+'\')" style="font-size:1.2rem;background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.25rem 0.35rem;cursor:pointer">'+e+'</button>';}).join('')+'</div>' : '';
@@ -597,6 +600,13 @@ function addCatSpesa() { var v=getNewItem(true); if(!v) return; state.catSpese.p
 function delCatSpesa(i) { state.catSpese.splice(i,1); saveState(); refreshAllSelects(); renderSettingsTab('spese'); }
 function addCatEntrata() { var v=getNewItem(true); if(!v) return; state.catEntrate.push(v); saveState(); refreshAllSelects(); renderSettingsTab('entrate'); }
 function delCatEntrata(i) { state.catEntrate.splice(i,1); saveState(); refreshAllSelects(); renderSettingsTab('entrate'); }
+function togglePosticipato(metodo) {
+  if (!state.metodiPosticipati) state.metodiPosticipati = [];
+  var idx = state.metodiPosticipati.indexOf(metodo);
+  if (idx>=0) state.metodiPosticipati.splice(idx,1);
+  else state.metodiPosticipati.push(metodo);
+  saveState(); renderSettingsTab('pagamenti');
+}
 function addMetodo() { var v=getNewItem(false); if(!v) return; state.metodiPagamento.push(v); saveState(); refreshAllSelects(); renderSettingsTab('pagamenti'); }
 function delMetodo(i) { state.metodiPagamento.splice(i,1); saveState(); refreshAllSelects(); renderSettingsTab('pagamenti'); }
 
@@ -706,6 +716,7 @@ function importaDati(event) {
       if (imported.tema) state.tema = imported.tema;
       if (imported.catEntrate) state.catEntrate = imported.catEntrate;
       if (imported.metodiPagamento) state.metodiPagamento = imported.metodiPagamento;
+      if (imported.metodiPosticipati) state.metodiPosticipati = imported.metodiPosticipati;
       saveState();
       refreshAllSelects();
       updateDashboard(); renderBudgetChart(); renderSpese(); renderEntrate(); renderTransazioni();
@@ -770,7 +781,12 @@ function saveSpesa() {
   const sDateEl = document.getElementById('s-date');
   const sDate = sDateEl ? sDateEl.value : '';
   if (!amount||amount<=0) return;
-  state.spese.push({desc:desc||cat,amount,cat,payment,date:sDate,id:Date.now(),month:state.month,year:state.year});
+  var spMonth=state.month, spYear=state.year;
+  if ((state.metodiPosticipati||[]).indexOf(payment)>=0) {
+    spMonth=state.month+1; spYear=state.year;
+    if (spMonth>11) { spMonth=0; spYear++; }
+  }
+  state.spese.push({desc:desc||cat,amount,cat,payment,date:sDate,id:Date.now(),month:spMonth,year:spYear});
   document.getElementById('s-desc').value=''; document.getElementById('s-amount').value=''; if(sDateEl) sDateEl.value='';
   saveState(); closeModal(); renderSpese(); renderTransazioni(); updateDashboard(); renderBudgetChart();
 }
@@ -805,14 +821,15 @@ function saveEntrata() {
 }
 
 function saveBudget() {
-  const risparmio = parseAmount(document.getElementById('b-risparmio').value)||0;
-  const investimento = parseAmount(document.getElementById('b-investimento').value)||0;
-  if (!risparmio && !investimento) return;
+  const rVal = document.getElementById('b-risparmio').value.trim();
+  const iVal = document.getElementById('b-investimento').value.trim();
+  const risparmio = rVal !== '' ? (parseAmount(rVal)||0) : null;
+  const investimento = iVal !== '' ? (parseAmount(iVal)||0) : null;
   const key=state.year+'-'+state.month;
   if (!state.budgets) state.budgets={};
   if (!state.budgets[key]) state.budgets[key]={};
-  if (risparmio) state.budgets[key].risparmio=risparmio;
-  if (investimento) state.budgets[key].investimento=investimento; else delete state.budgets[key].investimento;
+  if (risparmio !== null) { if (risparmio===0) delete state.budgets[key].risparmio; else state.budgets[key].risparmio=risparmio; }
+  if (investimento !== null) { if (investimento===0) delete state.budgets[key].investimento; else state.budgets[key].investimento=investimento; }
   document.getElementById('b-risparmio').value='';
   document.getElementById('b-investimento').value='';
   saveState(); closeModal(); updateDashboard(); renderBudgetChart();
