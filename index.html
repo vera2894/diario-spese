@@ -957,9 +957,10 @@ function renderTransazioni() {
     const icon=isSti?'💼':t.cat.split(' ')[0];
     const catLbl=isSti?'Stipendio mese prec.':t.cat;
     const pay=t.payment?' · <span style="color:var(--accent)">'+t.payment+'</span>':'';
-    const btns=!isSti?'<div style="display:flex;gap:0.5rem;justify-content:flex-end">'+
-      '<button class="tx-del" data-id="'+t.id+'" data-type="edit-'+t.type+'">modifica</button>'+
-      '<button class="tx-del" data-id="'+t.id+'" data-type="del-'+t.type+'">elimina</button></div>':'';
+    const editType=isSti?'entrata':t.type;
+    const btns='<div style="display:flex;gap:0.5rem;justify-content:flex-end">'+
+      '<button class="tx-del" data-id="'+t.id+'" data-type="edit-'+editType+'">modifica</button>'+
+      '<button class="tx-del" data-id="'+t.id+'" data-type="del-'+editType+'">elimina</button></div>';
     return '<div class="tx-item">'+
       '<div class="tx-icon" style="background:'+(isSp?'var(--red-light)':'var(--accent-light)')+'">'+icon+'</div>'+
       '<div class="tx-info"><div class="tx-name">'+t.desc+'</div><div class="tx-cat">'+catLbl+pay+'</div></div>'+
